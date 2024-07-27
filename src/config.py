@@ -1,0 +1,12 @@
+# global config
+
+MAX_CONV_HISTORY = 5
+GRADE_DOCUMENT_BATCH_SIZE = 3
+MAX_DOCUMENT_RETRIEVED = 6
+
+# index document config
+DOWNLOAD_DIRECTORY = "./downloads/"
+LANGUAGE_PRIORITIES = ["en", "zh", "vi", "fr", "es"]
+MAX_AUDIO_SIZE_IN_MB = 25
+INDEX_VIDEO_FPS = 1
+FRAME_SUB_CONTEXT = 20

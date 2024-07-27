@@ -1,0 +1,65 @@
+# LLM config
+# rpm: request per minute
+# tpm: token per minute
+# You can get the api key from the provider's website
+# The model_name is used to identify the model in the code
+# model in litellm_params can be found at https://docs.litellm.ai/docs/providers
+llm:
+  # groq API
+  - model_name: "gpt-3.5-turbo"
+    litellm_params:
+      model: "groq/llama3-8b-8192"
+      api_key: "${GROQ_API_KEY}"
+      rpm: 30
+  - model_name: "gpt-3.5-turbo"
+    litellm_params:
+      model: "groq/llama3-70b-8192"
+      api_key: "${GROQ_API_KEY}"
+      rpm: 30
+  # transcript API
+  - model_name: "whisper-large-v3"
+    litellm_params:
+      model: "groq/whisper-large-v3	"
+      api_key: "${GROQ_API_KEY}"
+      rpm: 20
+  # gemini api
+  # gemini-1.5-flash is a multimodal
+  - model_name: "gemini-1.5-flash"
+    litellm_params:
+      model: "gemini/gemini-1.5-flash"
+      api_key: "${GEMINI_API_KEY}"
+      rpm: 15
+  # Local models run on ollama
+  - model_name: "gpt-3.5-turbo"
+    litellm_params:
+      model: "ollama/phi3"
+  - model_name: "gpt-3.5-turbo"
+    litellm_params:
+      model: "ollama/gouranshitera/bloom-1b1"
+
+# litellm embedding
+# https://docs.litellm.ai/docs/embedding/supported_embedding
+embedding:
+  - model_name: "text-embedding-004"
+    litellm_params:
+      model: "gemini/text-embedding-004"
+      api_key: "${GEMINI_API_KEY}"
+      rpm: 1500
+
+# Embedding config (Locally)
+# Model from: https://huggingface.co/spaces/mteb/leaderboard
+local_embedding:
+
+  # https://huggingface.co/intfloat/multilingual-e5-large
+  - model_name: "local-e5-large-dim-1024"
+    params:
+      pretrained: "intfloat/multilingual-e5-small"
+      prompt_template: "query: {query}" # prompt for retrieval task
+      cuda: false
+
+  # https://huggingface.co/dunzhang/stella_en_1.5B_v5
+  - model_name: "local-stella_en_1.5B_v5"
+    params:
+      pretrained: "dunzhang/stella_en_1.5B_v5"
+      prompt_template: "Instruct: Given a web search query, retrieve relevant passages that answer the query.\nQuery: {query}"  # prompt for retrieve task
+      cuda: false
