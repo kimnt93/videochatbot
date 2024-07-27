@@ -1,3 +1,4 @@
+Your README.md looks well-written, but here are some minor corrections and improvements for clarity and consistency:
 
 # Video Chatbot
 <div align="center">
@@ -8,11 +9,10 @@
 - [x] Support for YouTube video URLs
 - [x] Support for video files
 - [x] Chat over multiple videos
-- [x] Chat with image
+- [x] Chat with images
 - [x] Summarize video content
-- [x] Speech to text to extract video transcript
+- [x] Speech-to-text to extract video transcripts
 - [x] Extract video frames
-- [x] 
 
 ## Indexing
 
@@ -21,13 +21,13 @@
 Here is our indexing pipeline:
 - For each video or URL, we first download and convert it to MP3 for transcription and subtitles using the Whisper-large-v3 model.
 - The Whisper-large-v3 model requires audio at 16kHz, so we convert the audio to 16kHz.
-- With the large audio files (>25MB), we split them into parts under 25MB, process each part, and then combine the results into a single transcript.
+- For large audio files (>25MB), we split them into parts under 25MB, process each part, and then combine the results into a single transcript.
 - We extract video frames, taking only 1 frame per second.
-- Convert the transcript to STT or VTT format.
+- Convert the transcript to SRT or VTT format.
 - Summarize the transcript of the video using the GROQ/Llama3-8B model.
-- Use Recursive Character Chunking with a chunk size of 300 and overlap of 20 to chunk the transcript.
+- Use Recursive Character Chunking with a chunk size of 300 and an overlap of 20 to chunk the transcript.
 - For each chunked text, we use the embedding model from Google AI (text-embedding-004).
-- Add text vector to vectorstore
+- Add text vectors to the vector store.
 - For each frame, find the context and get the embedding using ImageBind ([ImageBind GitHub](https://github.com/facebookresearch/ImageBind)).
 - Add context and image embeddings to the multimodal store.
 
@@ -42,7 +42,7 @@ Here is the workflow for the chatbot:
 ### Normal Query
 ![Normal Pipeline](images/normal-wf.jpg)
 
-The normal query workflow resembles the Adaptive RAG ([Adaptive RAG](https://arxiv.org/abs/2403.14403)) model but with some steps removed. Here is detail:
+The normal query workflow resembles the Adaptive RAG ([Adaptive RAG](https://arxiv.org/abs/2403.14403)) model but with some steps removed. Here are the details:
 
 - **Summary Chat History**: Summarize the latest chat history to get the conversation context.
 - **Routing Query**: Check if a document needs to be retrieved from the vector store. If not, proceed to generate the final response.

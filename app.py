@@ -37,4 +37,7 @@ async def on_message(message: cl.Message):
         output_msg += chunk
 
     await msg.send()
+    # set graph state
+    cl.user_session.set("graph", graph)
+
     return output_msg
