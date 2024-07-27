@@ -1,4 +1,3 @@
-Your README.md looks well-written, but here are some minor corrections and improvements for clarity and consistency:
 
 # Video Chatbot
 <div align="center">
