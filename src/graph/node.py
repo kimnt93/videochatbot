@@ -1,6 +1,11 @@
+import base64
+
 from src.config import MAX_CONV_HISTORY
 from src.factory.chain_factory import LlmChainFactory
 from src.graph.state import ConversationState, IsMultiModalInput
+from src.indexer.retriever import find_similar_from_semantic_text, find_similar_from_mmimg, find_similar_from_mmtext, \
+    find_similar_from_kw_text
+from src.utils import read_image_to_binary
 
 
 def is_multimodal_input(state: ConversationState):
@@ -34,14 +39,15 @@ def transform_question(state: ConversationState):
 
 def grade_document(state: ConversationState):
     question = state['question']
-
-    semantic_retrieved_documents = state['semantic_retrieved_documents']
-    text_retrieved_documents = state['text_retrieved_documents']
-
-    for sdoc, tdoc in zip(semantic_retrieved_documents, text_retrieved_documents):
-        chain = LlmChainFactory.grade_document_chain(documents=[{"d1": sdoc, "d2": tdoc}])
+    graded_documents = []
+    documents = state['documents']
+    for doc in documents:
+        chain = LlmChainFactory.create_grade_document_chain(document=doc.page_content)
         grade = chain.invoke({"question": question})
-        print(grade)
+        if 'yes' in grade:
+            graded_documents.append(doc.page_content)
+
+    return {"documents": graded_documents}
 
 
 def route_question(state: ConversationState):
@@ -58,9 +64,9 @@ def retrieve_documents(state: ConversationState):
     :return:
     """
     question = state['question']
-    semantic_retrieved_documents = list()
-    text_retrieved_documents = list()
-    return {"vector_retrieved_documents": semantic_retrieved_documents, "text_retrieved_documents": text_retrieved_documents}
+    s_documents = find_similar_from_semantic_text(question, top_k=3)
+    t_documents = find_similar_from_kw_text(question, top_k=3)
+    return {"documents": s_documents + t_documents}
 
 
 def retrieve_mm_documents(state: ConversationState):
@@ -69,9 +75,13 @@ def retrieve_mm_documents(state: ConversationState):
     :param state:
     :return:
     """
+    img_path = state['img_path']
     question = state['question']
-    image_retrieved_documents = list()
-    return {"image_retrieved_documents": image_retrieved_documents}
+    image_retrieved_documents = find_similar_from_mmimg(img_path, top_k=3)
+    text_retrieved_documents = find_similar_from_semantic_text(question, top_k=3)
+    documents = [doc.page_content for doc in text_retrieved_documents]
+    documents.extend([doc.metadata['context'] for doc in image_retrieved_documents])
+    return {"documents": documents}
 
 
 def generate_response(state: ConversationState):
@@ -89,6 +99,21 @@ def generate_response(state: ConversationState):
     chat_history = chat_history[:MAX_CONV_HISTORY + 1]  # keep only the last 5 chat history
     return {"chat_history": chat_history, "response": response}
 
-def generate_mm_response(state: ConversationState):
-    pass
 
+def generate_mm_response(state: ConversationState):
+    documents = state['documents']
+    question = state['question']
+    chain = LlmChainFactory.create_rag_multimodal_chain(documents, question)
+    image_data = read_image_to_binary(state['img_path'])
+    image_datab64 = base64.b64encode(image_data).decode("utf-8")
+
+    response = chain.invoke({"image_data": image_datab64})
+
+    # add history
+    chat_history = state.get("chat_history", None)
+    if chat_history is None:
+        chat_history = []
+
+    chat_history.insert(0, f"Human: {question}\nAI: {response}")
+    chat_history = chat_history[:MAX_CONV_HISTORY + 1]  # keep only the last 5 chat history
+    return {"chat_history": chat_history, "response": response}

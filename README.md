@@ -1,15 +1,13 @@
-Your README.md looks well-written, but here are some minor corrections and improvements for clarity and consistency:
-
 # Video Chatbot
 <div align="center">
-<img src="images/cover.svg"/>
+<img src="images/cover.jpg"/>
 </div>
 
 ## Features
 - [x] Support for YouTube video URLs
 - [x] Support for video files
 - [x] Chat over multiple videos
-- [x] Chat with images
+- [x] Chat with images (multimodal)
 - [x] Summarize video content
 - [x] Speech-to-text to extract video transcripts
 - [x] Extract video frames
@@ -45,7 +43,6 @@ Here is the workflow for the chatbot:
 The normal query workflow resembles the Adaptive RAG ([Adaptive RAG](https://arxiv.org/abs/2403.14403)) model but with some steps removed. Here are the details:
 
 - **Summary Chat History**: Summarize the latest chat history to get the conversation context.
-- **Routing Query**: Check if a document needs to be retrieved from the vector store. If not, proceed to generate the final response.
 - **Reconstruct Query**: Create a different version of the input query that provides more meaning for semantic search.
 - **Find Top K Documents in Semantic**: Retrieve the top K documents from the vector store rated by semantic similarity.
 - **Find Top K Documents in Text-Based**: Retrieve the top K documents from the vector store rated by text similarity.
@@ -60,8 +57,10 @@ When the input includes an image, we use the multimodal flow. This is a simplifi
 
 ## Video/Screen Shot
 
-[Coming Soon]
-
+<img src="screenshot/01.png">
+<img src="screenshot/02.png">
+<img src="screenshot/03.png">
+<img src="screenshot/04.png">
 ## Start Application
 
 First, install the requirements and set up the environment:
@@ -102,9 +101,10 @@ python src.cmd.index_multimodal
 Finally, start the chatbot server:
 
 ```sh
-chainlit run main.py
+chainlit run app.py
 ```
 
-### Token Usage and Cost Analysis
+[//]: # (### Token Usage and Cost Analysis)
 
-Check the Langsmith dashboard for models and token usage: [Langsmith Dashboard](https://smith.langchain.com/)
+[//]: # ()
+[//]: # (Check the Langsmith dashboard for models and token usage: [Langsmith Dashboard]&#40;https://smith.langchain.com/&#41;)

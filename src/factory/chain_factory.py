@@ -59,7 +59,7 @@ class LlmChainFactory:
                     template=prompt.RAG_GENERATION_PROMPT,
                     partial_variables={
                         "today": datetime.datetime.now(),
-                        "context": documents
+                        "context": "\n----\n".join(documents)
                     }
                 )
                 | llm.LLAMA_70B_LLM
@@ -75,19 +75,45 @@ class LlmChainFactory:
         )
 
     @staticmethod
-    def grade_document_chain(documents: List[Dict[str, str]]):
-        if documents is None:
-            documents = []
-
+    def create_grade_document_chain(document: str):
         return (
                 ChatPromptTemplate.from_template(
                     template=prompt.GRADE_DOCUMENT_PROMPT,
                     partial_variables={
-                        "today": datetime.datetime.now(),
-                        "documents": [{"d" + str(i + 1): doc} for i, doc in enumerate(documents)]
-                        # with prompt example format
+                        "document": document
                     }
                 )
                 | llm.LLAMA_8B_LLM
                 | StrOutputParser()
+        )
+
+    @staticmethod
+    def create_rag_multimodal_chain(documents: List[str], question: str):
+        """
+        https://python.langchain.com/v0.2/docs/how_to/multimodal_prompts/
+        :return:
+        """
+        sys_prompt = prompt.MULTIMODAL_DOCUMENT_PROMPT.format(question=question, today=datetime.datetime.now(), context="\n----\n".join(documents))
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "user",
+                    [
+                        {
+                            "type": "text",
+                            "text": sys_prompt,
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": "data:image/jpeg;base64,{image_data}"},
+                        }
+                    ],
+                ),
+            ]
+        )
+
+        return (
+            chat_prompt
+            | llm.MULTIMODAL_LLM
+            | StrOutputParser()
         )

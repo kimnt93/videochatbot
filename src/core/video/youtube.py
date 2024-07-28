@@ -1,10 +1,7 @@
-import dataclasses
-import datetime
 import hashlib
 import json
 import logging
 import os
-from typing import List, Dict
 
 import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
@@ -12,7 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
 from src import config
 from src.core.video.base import AClient
 from src.core.video.transcriber import transcript_audio, VideoTranscript, Segment
-from src.core.video.utils import extract_video_id
+from src.utils import extract_video_id
 
 
 class YoutubeVideoClient(AClient):

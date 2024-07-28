@@ -5,15 +5,20 @@ DEFAULT_SYS_PROMPT = """You are a helpful assistant. Please answer the user's qu
 
 CORRECT_SYS_PROMPT = "You are a helpful assistant for the company ZyntriQix. Your task is to correct any spelling discrepancies in the transcribed text. Make sure that the names of the following products are spelled correctly: ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T. Only add necessary punctuation such as periods, commas, and capitalization, and use only the context provided."
 
-QUERY_ROUTING_PROMPT = """You are an expert at routing a user question to a datastore, vectorstore or no relevant.
-The datastore contains information about video, including transcripts, subtitles, and metadata.
-Use the vectorstore for semantic search and retrieval of relevant information.
+QUERY_ROUTING_PROMPT = """You are an expert at routing a user question to a vectorstore or no relevant.
+The vectorstore contains information about video including transcripts, subtitles, and metadata for semantic search and retrieval of relevant information.
+If the question is about a video, route it to the vectorstore (label={yes}). If the question is not about a video, route it to no relevant (label={no}). Today is {today}.
 
 Input 1: What is the best way to train a chatbot?
-Output 1: datastore
+Output 1: {no}
 
 Input 2: Who is the CEO of OpenAI?
-Output 2: web-search
+Output 2: {no}
+
+Input 3: Summarize the video about the history of AI.
+Output 3: {yes}
+
+Input 4: 
 
 """
 
@@ -38,16 +43,14 @@ RAG_GENERATION_PROMPT = """You are an assistant for question-answering tasks. Us
 - Answer: """
 
 
-GRADE_DOCUMENT_PROMPT = """You are a grader assessing relevance of retrieved documents to a user question. If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant. Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. d1, d2,... stands for document 1, document 2,...
-Below is an example of the grading format. The Documents must be a list of dictionaries, and Grades must be a dictionary.
+GRADE_DOCUMENT_PROMPT = """You are a grader assessing relevance of retrieved documents to a user question. If the document contains keyword(s) or semantic meaning related to the user question, grade it 'yes' as relevant. Only give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question or not. Do not provide any additional information or preamble.
 
-Example:
-- Question: <example question>
-- Documents: [{"d1": <example document 1>, "d2": <example document 2>, "d3": <example document 3>,...}]
-- Grades: {"d1": "yes", "d2": "no", "d3": "yes", "d4": "yes", "d5": "no", "d6": "yes"}
-
-Here is your task. Please follow the same format as the example. Today's date is {today}.
 - Question: {question}
-- Documents: {documents}
-- Grades: 
-"""
+- Document: {document}
+- Grade: """
+
+MULTIMODAL_DOCUMENT_PROMPT = """Your task is generate answer for the user question using multimodal information from text and image. You can use the context for additional information. Avoid prefaces such as "based on information", "according to the provided data", etc. Today's date is {today}.
+
+- Question: {question}
+- Context: {context}
+- Answer: """

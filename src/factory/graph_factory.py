@@ -6,7 +6,7 @@ from src.graph.state import ConversationState, RouteQueryNextState, IsMultiModal
 def create_chatbot_default_workflow():
     workflow = StateGraph(ConversationState)
     workflow.add_node("summarize_conversation", node.summarize_conversation)
-    workflow.add_node("route_question", node.route_question)
+    # workflow.add_node("route_question", node.route_question)
     workflow.add_node("transform_question", node.transform_question)
     workflow.add_node("retrieve_documents", node.retrieve_documents)
     workflow.add_node("grade_document", node.grade_document)
@@ -28,16 +28,10 @@ def create_chatbot_default_workflow():
     )
     workflow.add_edge("summarize_mm_conversation", "retrieve_mm_documents")
     workflow.add_edge("retrieve_mm_documents", "generate_mm_response")
+    workflow.add_edge("generate_mm_response", END)
 
-    # route query
-    workflow.add_conditional_edges(
-        "summarize_conversation",
-        node.route_question,
-        {
-            RouteQueryNextState.RETRIEVE: "transform_question",
-            RouteQueryNextState.NO_RETRIEVE: "generate_response",
-        }
-    )
+    # not need to route
+    workflow.add_edge("summarize_conversation", "transform_question")
     workflow.add_edge("transform_question", "retrieve_documents")
     workflow.add_edge("retrieve_documents", "grade_document")
     workflow.add_edge("grade_document", "generate_response")

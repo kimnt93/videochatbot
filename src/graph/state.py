@@ -15,12 +15,12 @@ class ConversationState(TypedDict):
     chat_summary: str
     chat_summary_task_id: str
 
-    # The list of retrieved documents from vectorstore, text
-    semantic_retrieved_documents: List[str]
-    text_retrieved_documents: List[str]
-
     # the context for the RAG generation
     documents: List[str]
+    img_documents: List[str]  # for multimodal
+    # 2 retrieval methods
+    s_documents: List[str]
+    t_documents: List[str]
 
     # for image retrieval
     image_retrieved_documents: List[str]

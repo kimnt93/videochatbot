@@ -6,7 +6,7 @@ import json
 from src import config
 from src.core.video.base import AClient
 from src.core.video.transcriber import transcript_audio, VideoTranscript
-from src.core.video.utils import calculate_checksum
+from src.utils import calculate_checksum
 
 
 class LocalVideoClient(AClient):
