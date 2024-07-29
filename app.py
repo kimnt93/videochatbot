@@ -5,8 +5,6 @@ from langchain_core.runnables import Runnable, RunnableConfig
 from langsmith import traceable
 
 from src.factory.graph_factory import create_chatbot_default_workflow
-from src.graph.state import ConversationState
-
 
 
 @cl.on_chat_start
@@ -31,7 +29,22 @@ async def on_message(message: cl.Message):
 
     logging.info(f"Start chat `{question}` || {images}")
     graph: Runnable = cl.user_session.get("graph")
-    state = graph.invoke({"question": question, "img_path": images})
-    await cl.Message(state['response']).send()
+    msg = cl.Message(content="")
+    output_msg = ""
 
-    cl.user_session.set("graph", graph)
+    async for event in graph.astream_events({"question": question, "img_path": images}, version="v1"):
+        logging.info(event)
+        # Update chat message with event response
+        #
+        # {'event': 'on_chat_model_stream', 'name': 'ChatGroq', 'run_id': '424611c6-ed2b-4567-a4bd-301c33a64f9e',
+        # 'tags': ['seq:step:2'], 'metadata': {'langgraph_step': 5, 'langgraph_node': 'generate_response',
+        # 'langgraph_triggers': ['grade_document'], 'langgraph_task_idx': 0, 'ls_model_type': 'chat'},
+        # 'data': {'chunk': AIMessageChunk(content='', id='run-424611c6-ed2b-4567-a4bd-301c33a64f9e')}, 'parent_ids': []}
+        if event['event'] == "on_chat_model_stream":
+            content = event["data"]["chunk"].content or ""
+            await msg.stream_token(token=content)
+            output_msg += content
+
+    await msg.send()
+    cl.user_session.set("graph", graph)  # update graph state
+    return output_msg

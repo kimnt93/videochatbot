@@ -37,8 +37,9 @@ QUESTION_RE_WRITER_PROMPT = """Your task is to rewrite the following question to
 Question: {question}
 Improved Question: """
 
-RAG_GENERATION_PROMPT = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Avoid prefaces such as "based on information", "according to the provided data", etc. Today's date is {today}.
+RAG_GENERATION_PROMPT = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context and the chat summary to answer the question. If you don't know the answer, just say that you don't know. Avoid prefaces such as "based on information", "according to the provided data", etc. Today's date is {today}.
 - Question: {question}
+- Chat summary: {chat_summary}
 - Context: {context}
 - Answer: """
 
@@ -49,8 +50,9 @@ GRADE_DOCUMENT_PROMPT = """You are a grader assessing relevance of retrieved doc
 - Document: {document}
 - Grade: """
 
-MULTIMODAL_DOCUMENT_PROMPT = """Your task is generate answer for the user question using multimodal information from text and image. You can use the context for additional information. Avoid prefaces such as "based on information", "according to the provided data", etc. Today's date is {today}.
+MULTIMODAL_DOCUMENT_PROMPT = """Your task is generate answer for the user question using multimodal information from text and image. You can use the context and the chat summary for additional information. Avoid prefaces such as "based on information", "according to the provided data", etc. Today's date is {today}.
 
 - Question: {question}
+- Chat summary: {chat_summary}
 - Context: {context}
 - Answer: """

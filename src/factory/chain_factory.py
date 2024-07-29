@@ -50,23 +50,6 @@ class LlmChainFactory:
         )
 
     @staticmethod
-    def create_rag_generate_chain(documents: Union[List[str], None]):
-        if documents is None:
-            documents = []
-
-        return (
-                ChatPromptTemplate.from_template(
-                    template=prompt.RAG_GENERATION_PROMPT,
-                    partial_variables={
-                        "today": datetime.datetime.now(),
-                        "context": "\n----\n".join(documents)
-                    }
-                )
-                | llm.LLAMA_70B_LLM
-                | StrOutputParser()
-        )
-
-    @staticmethod
     def create_question_routing_chain():
         return (
                 ChatPromptTemplate.from_template(template=prompt.QUERY_ROUTING_PROMPT)
@@ -88,12 +71,30 @@ class LlmChainFactory:
         )
 
     @staticmethod
-    def create_rag_multimodal_chain(documents: List[str], question: str):
+    def create_rag_generate_chain(documents: Union[List[str], None], chat_summary: str):
+        if documents is None:
+            documents = []
+
+        return (
+                ChatPromptTemplate.from_template(
+                    template=prompt.RAG_GENERATION_PROMPT,
+                    partial_variables={
+                        "today": datetime.datetime.now(),
+                        "context": "\n----\n".join(documents),
+                        "chat_summary": chat_summary
+                    }
+                )
+                | llm.LLAMA_70B_LLM
+                | StrOutputParser()
+        )
+
+    @staticmethod
+    def create_rag_multimodal_chain(documents: List[str], question: str, chat_summary: str):
         """
         https://python.langchain.com/v0.2/docs/how_to/multimodal_prompts/
         :return:
         """
-        sys_prompt = prompt.MULTIMODAL_DOCUMENT_PROMPT.format(question=question, today=datetime.datetime.now(), context="\n----\n".join(documents))
+        sys_prompt = prompt.MULTIMODAL_DOCUMENT_PROMPT.format(question=question, today=datetime.datetime.now(), context="\n----\n".join(documents), chat_summary=chat_summary)
         chat_prompt = ChatPromptTemplate.from_messages(
             [
                 (

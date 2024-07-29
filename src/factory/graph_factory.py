@@ -1,9 +1,10 @@
+from langchain_core.runnables import Runnable
 from langgraph.graph import StateGraph, END, START
 import src.graph.node as node
 from src.graph.state import ConversationState, RouteQueryNextState, IsMultiModalInput
 
 
-def create_chatbot_default_workflow():
+def create_chatbot_default_workflow() -> Runnable:
     workflow = StateGraph(ConversationState)
     workflow.add_node("summarize_conversation", node.summarize_conversation)
     # workflow.add_node("route_question", node.route_question)

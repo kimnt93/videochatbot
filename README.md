@@ -42,18 +42,22 @@ Here is the workflow for the chatbot:
 
 The normal query workflow resembles the Adaptive RAG ([Adaptive RAG](https://arxiv.org/abs/2403.14403)) model but with some steps removed. Here are the details:
 
-- **Summary Chat History**: Summarize the latest chat history to get the conversation context.
-- **Reconstruct Query**: Create a different version of the input query that provides more meaning for semantic search.
-- **Find Top K Documents in Semantic**: Retrieve the top K documents from the vector store rated by semantic similarity.
-- **Find Top K Documents in Text-Based**: Retrieve the top K documents from the vector store rated by text similarity.
-- **Grade Document**: Check if the document is relevant to the user query.
-- **Generate Response**: Generate the response based on the original user query and the graded document.
+- **Summary Chat History**: Celery task to summarize the latest chat history to get the conversation context (Llama3-8B)
+- **Reconstruct Query**: Create a different version of the input query that provides more meaning for semantic search (Llama3-8B)
+- **Find Top K Documents in Semantic**: Retrieve the top K documents from the vector store rated by semantic similarity (From vector DB)
+- **Find Top K Documents in Text-Based**: Retrieve the top K documents from the vector store rated by text similarity (From memery text index)
+- **Grade Document**: Parallel check if the document is relevant to the user query (Llama3-8B)
+- **Generate Response**: Generate the response based on the original user query and the graded document (Llama3-70B)
 
 ### Multimodal Query
 
 ![Multimodal Workflow](images/multimodal-wf.jpg)
 
-When the input includes an image, we use the multimodal flow. This is a simplified flow where we use both image and text to obtain multimodal embeddings and then respond to the user query.
+When the input includes an image, we use the multimodal flow. This is a simplified flow where we use both image and text to obtain multimodal embeddings and then respond to the user query. Here are the details:
+- **Summary Chat History**: Celery task to summarize the latest chat history to get the conversation context (Llama3-8B)
+- **Find Top K Documents in Semantic**: Retrieve the top K documents from the vector store rated by semantic similarity (From vector DB)
+- **Find Top K Documents in Image-Based**: Retrieve the top images from the image store and image context (ImageBind)
+- **Generate Response**: Generate the response based on the original user query and the graded document (Gemini-1.5-flash)
 
 ## Video/Screen Shot
 
