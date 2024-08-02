@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict
+from typing import TypedDict, List, Dict, Union
 from dataclasses import dataclass
 
 
@@ -9,7 +9,7 @@ class ConversationState(TypedDict):
 
     # The chat history
     # List of: ["Human: <....>\nAI: <....>"]
-    chat_history: List[str]
+    chat_history: Union[List[str], str]
 
     # The chat summary, the video_id use for get chat summary later on Celery
     chat_summary: str

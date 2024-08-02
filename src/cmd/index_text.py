@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import re
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -50,9 +51,26 @@ def index_data():
         doc_chunks = text_splitter.create_documents([vit.vvt])
         docs = []
         for doc in doc_chunks:
-            # index text: title + chunk content
+            page_content = doc.page_content
+
+            # try:
+            #     # index text: title + chunk content
+            #     # merge subtitles to single sub
+            #     pattern = re.compile(r'(\d+:\d+:\d+\.\d+ --> \d+:\d+:\d+\.\d+)\n(.*?)\n', re.DOTALL)
+            #     matches = pattern.findall(doc.page_content)
+            #     start_time = matches[0][0].split(' --> ')[0]
+            #     end_time = matches[-1][0].split(' --> ')[1]
+            #     texts = [match[1].replace('\n', ' ') for match in matches]
+            #     combined_texts = ' '.join(texts)
+            #     page_content = f"{start_time} --> {end_time}\n{combined_texts}"
+            # except Exception as ex:
+            #     pass
+
+            page_content = page_content.strip()
+            if page_content == "":
+                continue
             doc = Document(
-                page_content=f"{vit.title}\n\n{doc.page_content}",
+                page_content=page_content,
                 metadata={"title": vit.title, "video_id": video_id}
             )
             docs.append(doc)

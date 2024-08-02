@@ -32,7 +32,8 @@ async def on_message(message: cl.Message):
     msg = cl.Message(content="")
     output_msg = ""
 
-    async for event in graph.astream_events({"question": question, "img_path": images}, version="v1"):
+    chat_end_event = dict()
+    async for event in graph.astream_events({"question": question, "img_path": images}, version="v2"):
         logging.info(event)
         # Update chat message with event response
         #
@@ -44,6 +45,13 @@ async def on_message(message: cl.Message):
             content = event["data"]["chunk"].content or ""
             await msg.stream_token(token=content)
             output_msg += content
+    #     if event['event'] == "on_chat_end":
+    #         chat_end_event = event
+    #
+    # try:
+    #     graph['chat_history'] = chat_end_event['data']['output']['chat_history']
+    # except:
+    #     pass
 
     await msg.send()
     cl.user_session.set("graph", graph)  # update graph state

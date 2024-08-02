@@ -1,5 +1,5 @@
 # Local LLM: Analyzing the Cost of Deployment
-*(Data 27/7/2024)*
+*(Data 01/08/2024)*
 
 **Source code**: [localllm](localllm)
 ## Table of Contents
@@ -239,21 +239,22 @@ Source: https://lambdalabs.com/service/gpu-cloud
 
 ### Comparing with OpenAI, Gemini, Claude, etc.
 
-For RAG (Retrieval-Augmented Generation) applications, assume the cost to generate 1 million tokens includes [2 * input + output]. Note that the tokenizers of different models vary. For instance, 1 million tokens of GPT-3.5-turbo approximately equals 700k tokens of Llama3-8B.
+For RAG (Retrieval-Augmented Generation) applications, assume the cost to generate 1 million tokens includes [12m input + 1m output]. Note that the tokenizers of different models vary. For instance, 1 million tokens of GPT-3.5-turbo approximately equals 700k tokens of Llama3-8B.
 
 *Prices from [OpenRouter](https://openrouter.ai/models)*
 
-| LLM                        | Price for 1M tokens | TPS    |
-|----------------------------|---------------------|--------|
-| OpenAI/GPT-3.5-turbo       | $4                  | 56.75  |
-| OpenAI/GPT-4-turbo         | $40                 | 23.96  |
-| OpenAI/GPT-4o              | $25                 | 65.29  |
-| Anthropic/Claude-3.5-sonnet | $24                 | 62.42  |
-| Google/Gemini-flash-1.5    | $1.25               | 144.77 |
-| GROQ/Llama3-8B-8k         | $0.18               | 1250   |
-| Llama-3-8B Q4              | $2.17               | 102.22 |
+| LLM                      | Price for 1M tokens | TPS    |
+|--------------------------|---------------------|--------|
+| OpenAI/GPT-3.5-turbo     | $7.5                | 85.56  |
+| OpenAI/GPT-3.5-turbo-16k | $9                  | 92.10  |
+| OpenAI/GPT-4o-mini       | $2.4                | 74.05  |
+| Anthropic/Claude-3-haiku | $4.25               | 145.92 |
+| Google/Gemini-flash-1.5  | $3.75               | 144.77 |
+| GROQ/Llama3-8B           | $0.68               | 1250   |
+| GROQ/Llama3-70B          | $7.51               | 330    |
+| Llama-3-8B Q4            | $2.17               | 102.22 |
 
-For the above table, if we self-host Llama3-8B and compare with GPT-3.5, we must use at least 60% running time of the cloud instance to be cost-effective.
+For the above table, if we self-host Llama3-8B and compare with GPT-3.5, we must use at least 30% running time of the cloud instance to be cost-effective.
 
 ## Reducing LLM Usage Costs
 

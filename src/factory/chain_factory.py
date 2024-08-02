@@ -84,7 +84,7 @@ class LlmChainFactory:
                         "chat_summary": chat_summary
                     }
                 )
-                | llm.LLAMA_70B_LLM
+                | llm.LLAMA_8B_LLM
                 | StrOutputParser()
         )
 

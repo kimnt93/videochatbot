@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 from src.indexer.config import PERSIST_VECDB_TEXT, PERSIST_VECDB_MMIMG, PERSIST_VECDB_MMTEXT
 from src.indexer.mmeb import MM_IMG_EMBEDDING, MM_TEXT_EMBEDDING
 from src.llm.model import EMBEDDING_MODEL
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
 
@@ -25,6 +25,8 @@ bm25_retriever.k = 10
 
 
 def add_new_document_text(new_documents: List[Document]):
+    # format documents
+    #
     return vectordb_text.add_documents(
         new_documents,
         ids=[hashlib.md5(doc.page_content.encode()).hexdigest() for doc in new_documents]
