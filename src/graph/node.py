@@ -105,15 +105,7 @@ def generate_response(state: ConversationState, config: RunnableConfig):
 
     chain = LlmChainFactory.create_rag_generate_chain(documents, state['chat_summary'])
     response = chain.invoke({"question": question}, config)
-
-    # add history
-    chat_history = state.get("chat_history", None)
-    if chat_history is None:
-        chat_history = []
-
-    chat_history.insert(0, f"Human: {question}\nAI: {response}")
-    chat_history = chat_history[:MAX_CONV_HISTORY + 1]  # keep only the last 5 chat history
-    return {"chat_history": chat_history, "response": response}
+    return {"response": response}
 
 
 def generate_mm_response(state: ConversationState, config: RunnableConfig):
@@ -127,11 +119,4 @@ def generate_mm_response(state: ConversationState, config: RunnableConfig):
 
     response = chain.invoke({"image_data": image_datab64}, config)
 
-    # add history
-    chat_history = state.get("chat_history", None)
-    if chat_history is None:
-        chat_history = []
-
-    chat_history.insert(0, f"Human: {question}\nAI: {response}")
-    chat_history = chat_history[:MAX_CONV_HISTORY + 1]  # keep only the last 5 chat history
-    return {"chat_history": chat_history, "response": response}
+    return {"response": response}

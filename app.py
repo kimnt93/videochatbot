@@ -1,9 +1,10 @@
 import logging
 
 import chainlit as cl
-from langchain_core.runnables import Runnable, RunnableConfig
+from langchain_core.runnables import Runnable
 from langsmith import traceable
 
+from src.config import MAX_CONV_HISTORY
 from src.factory.graph_factory import create_chatbot_default_workflow
 
 
@@ -14,6 +15,7 @@ async def on_chat_start():
 
     # save graph and state to the user session
     cl.user_session.set("graph", graph)
+    cl.user_session.set("chat_history", [])
 
 
 @cl.on_message
@@ -29,11 +31,11 @@ async def on_message(message: cl.Message):
 
     logging.info(f"Start chat `{question}` || {images}")
     graph: Runnable = cl.user_session.get("graph")
+    chat_history: list = cl.user_session.get("chat_history")
     msg = cl.Message(content="")
     output_msg = ""
 
-    chat_end_event = dict()
-    async for event in graph.astream_events({"question": question, "img_path": images}, version="v2"):
+    async for event in graph.astream_events({"question": question, "img_path": images, "chat_history": chat_history}, version="v2"):
         logging.info(event)
         # Update chat message with event response
         #
@@ -45,14 +47,10 @@ async def on_message(message: cl.Message):
             content = event["data"]["chunk"].content or ""
             await msg.stream_token(token=content)
             output_msg += content
-    #     if event['event'] == "on_chat_end":
-    #         chat_end_event = event
-    #
-    # try:
-    #     graph['chat_history'] = chat_end_event['data']['output']['chat_history']
-    # except:
-    #     pass
 
     await msg.send()
-    cl.user_session.set("graph", graph)  # update graph state
+    chat_history.insert(0, f"Human: {question}\nAI: {output_msg}")
+    chat_history = chat_history[:MAX_CONV_HISTORY + 1]  # keep only the last MAX_CONV_HISTORY chat history
+    cl.user_session.set("graph", graph)                 # update graph state
+    cl.user_session.set("chat_history", chat_history)   # update graph state
     return output_msg
