@@ -11,9 +11,9 @@ import torch
 
 from src.llm.model import EMBEDDING_MODEL
 
-# MM_EMBEDDING = imagebind_model.imagebind_huge(pretrained=True)
-# MM_EMBEDDING.eval()
-# device = "cuda" if torch.cuda.is_available() else "cpu"
+MM_EMBEDDING = imagebind_model.imagebind_huge(pretrained=True)
+MM_EMBEDDING.eval()
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def get_image_embedding_mm(image_path):
